@@ -3,8 +3,8 @@
 bool negador = 0;
 
 uint8_t Pinout [5] = {LED_RED, LED_GRE, PIN_12V, PIN_5V, PIN_CAN};
-// REPLACE WITH THE MAC Address of your receiver 
-uint8_t broadcastAddress[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+// REPLACE WITH THE MAC Address of your receiver BOX 2
+uint8_t broadcastAddress[6] = {0xC0, 0x49, 0xEF, 0xCB, 0x4F, 0x38};
 
 DeviceBox caixa_1;
 
@@ -36,15 +36,28 @@ void setup()
   #endif
   caixa_1.Initializer(broadcastAddress);
   Serial.println("INICIOU");
+  digitalWrite(PIN_12V, HIGH);
+  write_led_feedback(STARTING);
 }
+
+int gambi_force_button = 0;
+ROUTINE_TEST vector_force_button[] = {CONTINUITY, DUCT_CYCLE, SENOIDAL};
+int index_v = 0;
 
 void loop()
 {
-  Serial.println("BAGACA");
-  while(caixa_1.getCurrentStatus() == ERROR_MODE)
+  if (gambi_force_button > 10)
   {
-    Serial.println("ERROR MODE");
-    delay(1000);
+    gambi_force_button=0;
+    caixa_1.setEventButton(vector_force_button[index_v]);
+    if (index_v > 1)
+    {
+      index_v = 0;
+    } 
+    else
+    {
+      index_v++;
+    }
   }
   if (digitalRead(BUTTON_1) == PRESSED)
   {
@@ -58,10 +71,14 @@ void loop()
   {
     caixa_1.setEventButton(SENOIDAL);
   }
-  
+
   caixa_1.Process();
   write_event_on_pin(caixa_1.getCurrentRoutine());
   write_led_feedback(caixa_1.getCurrentStatus());
+  caixa_1.Debug_SeeVariables();
+
+  gambi_force_button++;
+
   delay(500);
 }
 
@@ -90,12 +107,12 @@ void write_event_on_pin(ROUTINE_TEST _event)
 
 void write_led_feedback(EVENT_SYSTEM _event)
 {
+  negador = !negador;
   switch(_event)
   {
     case ERROR_MODE:
       digitalWrite(LED_RED, negador);
       digitalWrite(LED_GRE, negador);
-      negador = !negador;
       break;
     case STARTING:
       /*
@@ -119,6 +136,7 @@ void write_led_feedback(EVENT_SYSTEM _event)
       digitalWrite(LED_RED, LOW);
       digitalWrite(LED_GRE, negador);
       break;
+    /*
     case TEST_PASS:
       digitalWrite(LED_RED, LOW);
       digitalWrite(LED_GRE, HIGH);
@@ -127,6 +145,7 @@ void write_led_feedback(EVENT_SYSTEM _event)
       digitalWrite(LED_RED, HIGH);
       digitalWrite(LED_GRE, LOW);
       break;
+    */
     break;
   }
 }

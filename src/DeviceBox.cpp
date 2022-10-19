@@ -17,10 +17,10 @@ void DeviceBox::Initializer(uint8_t * broadcast_address)
     // clear trash values from struct
     // I cannot use memcpy because this variable are static!
     _local_data._box_alive = DEAD;
-    _local_data._event = STARTING;
+    _local_data._event = PERIPHEL_OFF;
     _local_data._routine = INITIAL;
     _recevid_data._box_alive = DEAD;
-    _recevid_data._event = STARTING;
+    _recevid_data._event = PERIPHEL_OFF;
     _recevid_data._routine = INITIAL;
 
     _lost_box = 0;
@@ -56,6 +56,8 @@ void DeviceBox::setEventButton(ROUTINE_TEST button_press)
 {
     _local_data._routine = button_press;
     // The idea is shows to box that has update on status
+    Serial.print("-- Button Event: ");
+    Serial.println(button_press);
     Send_Message();
 }
 
@@ -116,32 +118,83 @@ bool DeviceBox::snyc_esp(void)
 
 int DeviceBox::Process(void)
 {
+    Serial.println("* Entrou Process *");
     /*
         Semrpre que houver qualquer alteração no sistema
         seja estado ou evento, os dois sistemas precisam
         ficar sabendo
     */
-    if (_lost_box > 3)
+   /*
+    if (_lost_box > 10)
     {
         _local_data._event = ERROR_MODE;
-    }
-    if (_is_data_coming == YES)
-    {
-        _is_data_coming = NO;
-        if (_local_data._box_alive = ALIVE)
+    } */
+   if (_is_data_coming == YES)
+   {
+        Serial.println("!! - Chegou mensagem");
+        if (_recevid_data._box_alive != _local_data._box_alive)
         {
-            _local_data._event = PERIPHEL_ON;
-            return PERIPHEL_ON;
+           /*
+            Idealmente isso só ocorre uma vez durante a execução
+            ou quando perde a comunicação preciso dizer na estrutura
+            que perdi a comunicação.
+           */ 
+            if (_recevid_data._box_alive = ALIVE)
+            {
+                Serial.println("CAIXA 2 -- ON");
+                _local_data._box_alive = _recevid_data._box_alive;
+                setEventButton(INITIAL);
+                _local_data._event = PERIPHEL_ON;
+            }
         }
-        else if (_local_data._box_alive = DEAD)
+        else if (_local_data._box_alive == ALIVE)
         {
-            _local_data._event = PERIPHEL_OFF;
-            return PERIPHEL_OFF;
+            if (_recevid_data._event != _local_data._event)
+            {
+                _local_data._event = _recevid_data._event;
+            }
+        }
+
+        
+
+        if (_recevid_data._event >= (_local_data._event - 1))
+        {
+            _local_data._event = _recevid_data._event;
         }
     }
-    else if (snyc_esp() == 0 || _is_data_coming == ERRO)
+    else
     {
         Send_Message();
     }
-    return -1;
+    if ( _is_data_coming == ERRO)
+    {
+        _local_data._box_alive = DEAD;
+        _local_data._event = PERIPHEL_OFF;
+    }
+    Serial.println("* Saiu Process*");
+    return 1;
+}
+
+void DeviceBox::Debug_SeeVariables()
+{
+    Serial.println("------------------------------");
+    Serial.println("**LOCAL DATA**");
+    Serial.print("{");
+    Serial.print("_event:");
+    Serial.print(_local_data._event);
+    Serial.print(" | _routine:");
+    Serial.print(_local_data._routine);
+    Serial.print(" | _box_alive:");
+    Serial.print(_local_data._box_alive);
+    Serial.println("}");
+    Serial.println("**RECIVED DATA**");
+    Serial.print("{");
+    Serial.print("_event:");
+    Serial.print(_recevid_data._event);
+    Serial.print(" | _routine:");
+    Serial.print(_recevid_data._routine);
+    Serial.print(" | _box_alive:");
+    Serial.print(_recevid_data._box_alive);
+    Serial.println("}");
+    Serial.println("------------------------------");
 }
