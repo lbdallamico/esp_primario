@@ -19,9 +19,11 @@ void DeviceBox::Initializer(uint8_t * broadcast_address)
     _local_data._box_alive = DEAD;
     _local_data._event = PERIPHEL_OFF;
     _local_data._routine = INITIAL;
+    _local_data._feedback_test = ANY_TEST_RUNNING;
     _recevid_data._box_alive = DEAD;
     _recevid_data._event = PERIPHEL_OFF;
     _recevid_data._routine = INITIAL;
+    _recevid_data._feedback_test = ANY_TEST_RUNNING;
 
     _lost_box = 0;
 
@@ -61,12 +63,17 @@ void DeviceBox::setEventButton(ROUTINE_TEST button_press)
     Send_Message();
 }
 
-ROUTINE_TEST DeviceBox::getCurrentRoutine(void)
+ROUTINE_TEST DeviceBox::getRoutine(void)
 {
     return _local_data._routine;
 }
 
-EVENT_SYSTEM DeviceBox::getCurrentStatus(void)
+FEEDBACK_TEST DeviceBox::getFeedbackTest(void)
+{
+    return _local_data._feedback_test;
+}
+
+EVENT_SYSTEM DeviceBox::getSystemEvent(void)
 {
     return _local_data._event;
 }
@@ -149,17 +156,7 @@ int DeviceBox::Process(void)
         }
         else if (_local_data._box_alive == ALIVE)
         {
-            if (_recevid_data._event != _local_data._event)
-            {
-                _local_data._event = _recevid_data._event;
-            }
-        }
-
-        
-
-        if (_recevid_data._event >= (_local_data._event - 1))
-        {
-            _local_data._event = _recevid_data._event;
+            _local_data._feedback_test = _recevid_data._feedback_test;
         }
     }
     else

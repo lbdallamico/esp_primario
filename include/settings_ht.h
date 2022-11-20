@@ -90,8 +90,9 @@ class DeviceBox
         int Process(void);
 
         void setEventButton(ROUTINE_TEST button_press);
-        ROUTINE_TEST getCurrentRoutine(void);
-        EVENT_SYSTEM getCurrentStatus(void);
+        ROUTINE_TEST getRoutine(void);
+        EVENT_SYSTEM getSystemEvent(void);
+        FEEDBACK_TEST getFeedbackTest(void);
         void Debug_SeeVariables(void);
         static struct_msg _local_data;
         static struct_msg _recevid_data;
