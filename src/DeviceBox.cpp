@@ -195,3 +195,31 @@ void DeviceBox::Debug_SeeVariables()
     Serial.println("}");
     Serial.println("------------------------------");
 }
+
+void DeviceBox::ResetTest(void)
+{
+    _local_data._routine = CONTINUIDADE_CABO_1;
+}
+
+void DeviceBox::AvancaProxTest(void)
+{
+    ROUTINE_TEST aux = INITIAL;
+    switch (_local_data._routine)
+    {
+    case CONTINUIDADE_CABO_1:
+        aux = CONTINUIDADE_CABO_2;
+        break;
+    case CONTINUIDADE_CABO_2:
+        aux = CONTINUIDADE_CABO_3;
+        break;
+    case CONTINUIDADE_CABO_3:
+        aux = CONTINUIDADE_CABO_4;
+        break;
+    case CONTINUIDADE_CABO_4:
+        aux = CONTINUIDADE_CABO_1;
+        break;
+    default:
+        break;
+    }
+    _local_data._routine = aux;
+}
