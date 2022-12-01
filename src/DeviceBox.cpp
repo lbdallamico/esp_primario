@@ -54,15 +54,6 @@ void DeviceBox::Initializer(uint8_t * broadcast_address)
 
 DeviceBox::~DeviceBox(){}
 
-void DeviceBox::setEventButton(ROUTINE_TEST button_press)
-{
-    _local_data._routine = button_press;
-    // The idea is shows to box that has update on status
-    Serial.print("-- Button Event: ");
-    Serial.println(button_press);
-    Send_Message();
-}
-
 ROUTINE_TEST DeviceBox::getRoutine(void)
 {
     return _local_data._routine;
@@ -110,19 +101,6 @@ void DeviceBox::Send_Message(void)
     }
 }
 
-/*
-    @brief: Verifica se as esp estão sincronizadas através
-            dos eventos e rotinas
-    @param: Nothing
-    @return: TRUE  - Esp estão sincronizadas
-             FALSE - Desincronizadas
-*/
-bool DeviceBox::snyc_esp(void)
-{
-    if (_local_data._event != _recevid_data._event) return 0;
-    else return 1;
-}
-
 int DeviceBox::Process(void)
 {
     Serial.println("* Entrou Process *");
@@ -136,33 +114,22 @@ int DeviceBox::Process(void)
     {
         _local_data._event = ERROR_MODE;
     } */
-   if (_is_data_coming == YES)
-   {
-        Serial.println("!! - Chegou mensagem");
-        if (_recevid_data._box_alive != _local_data._box_alive)
-        {
-           /*
-            Idealmente isso só ocorre uma vez durante a execução
-            ou quando perde a comunicação preciso dizer na estrutura
-            que perdi a comunicação.
-           */ 
-            if (_recevid_data._box_alive = ALIVE)
-            {
-                Serial.println("CAIXA 2 -- ON");
-                _local_data._box_alive = _recevid_data._box_alive;
-                setEventButton(INITIAL);
-                _local_data._event = PERIPHEL_ON;
-            }
-        }
-        else if (_local_data._box_alive == ALIVE)
-        {
-            _local_data._feedback_test = _recevid_data._feedback_test;
-        }
-    }
-    else
+    Serial.println("!! - Chegou mensagem");
+    if (_recevid_data._box_alive != _local_data._box_alive)
     {
-        Send_Message();
+        /*
+        Idealmente isso só ocorre uma vez durante a execução
+        ou quando perde a comunicação preciso dizer na estrutura
+        que perdi a comunicação.
+        */ 
+        if (_recevid_data._box_alive = ALIVE)
+        {
+            _local_data._box_alive = ALIVE;
+            _local_data._event = PERIPHEL_ON;
+        }
     }
+    _local_data._feedback_test = _recevid_data._feedback_test;
+    Send_Message();
     if ( _is_data_coming == ERRO)
     {
         _local_data._box_alive = DEAD;
@@ -192,6 +159,8 @@ void DeviceBox::Debug_SeeVariables()
     Serial.print(_recevid_data._routine);
     Serial.print(" | _box_alive:");
     Serial.print(_recevid_data._box_alive);
+    Serial.print(" | _FEEDBACK:");
+    Serial.print(_recevid_data._feedback_test);
     Serial.println("}");
     Serial.println("------------------------------");
 }

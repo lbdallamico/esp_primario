@@ -6,10 +6,45 @@ const uint8_t broadcastAddress[6] = {0xC0, 0x49, 0xEF, 0xCB, 0x4F, 0x38};
 DeviceBox caixa_1;
 void write_led_feedback(EVENT_SYSTEM _event, FEEDBACK_TEST result_test);
 void write_event_on_pin(ROUTINE_TEST _event);
+
+void feedback_LED_com_test();
+uint8_t gambi_led = 0;
+uint8_t buff_time_led = 0;
 /*
  * Implementação dos testes
  */
 static bool negador = 0;
+static uint8_t deboucer_botao = 0;
+
+void IRAM_ATTR Interrupt_botao1()
+{
+  caixa_1.ResetTest();
+  deboucer_botao = 3;
+  detachInterrupt(BUTTON_1);
+  detachInterrupt(BUTTON_2);
+}
+
+void IRAM_ATTR Interrupt_botao2()
+{
+  caixa_1.AvancaProxTest();
+  deboucer_botao = 3;
+  detachInterrupt(BUTTON_1);
+  detachInterrupt(BUTTON_2);
+}
+
+void deboucer_de_loop()
+{
+  if (deboucer_botao > 1)
+  {
+    deboucer_botao--;
+  }
+  else if (deboucer_botao == 1)
+  {
+    attachInterrupt(BUTTON_1, Interrupt_botao1, FALLING);
+    attachInterrupt(BUTTON_2, Interrupt_botao2, FALLING);
+    deboucer_botao--;
+  }
+}
 
 void setup()
 {
@@ -25,6 +60,8 @@ void setup()
       digitalWrite(Pinout[i], LOW);
     }
   #endif
+  attachInterrupt(BUTTON_1, Interrupt_botao1, FALLING);
+  attachInterrupt(BUTTON_2, Interrupt_botao2, FALLING);
   caixa_1.Initializer((uint8_t*)broadcastAddress);
   Serial.println("INICIOU");
   write_led_feedback(STARTING, ANY_TEST_RUNNING);
@@ -32,27 +69,19 @@ void setup()
 
 void loop()
 {
-  if (digitalRead(BUTTON_1) == PRESSED)
-  {
-    caixa_1.ResetTest();
-  } 
-  else if (digitalRead(BUTTON_2) == PRESSED)
-  {
-    caixa_1.AvancaProxTest();
-  }
-
   caixa_1.Process();
   write_event_on_pin(caixa_1.getRoutine());
   write_led_feedback(caixa_1.getSystemEvent(),
                      caixa_1.getFeedbackTest());
   caixa_1.Debug_SeeVariables();
-  //gambi_force_button++;
+  deboucer_de_loop();
   delay(DELAY_LOOP);
 }
 
 /*
   Commom implementation
 */
+
 void write_event_on_pin(ROUTINE_TEST _event)
 {
   switch(_event)
@@ -88,6 +117,7 @@ void write_event_on_pin(ROUTINE_TEST _event)
   }
 }
 
+bool timer_neg = 0;
 void write_led_feedback(EVENT_SYSTEM _event, FEEDBACK_TEST result_test)
 {
   negador = !negador;
@@ -124,7 +154,7 @@ void write_led_feedback(EVENT_SYSTEM _event, FEEDBACK_TEST result_test)
       break;
     break;
   }
-  if (_event == PERIPHEL_ON)
+  if ((_event == PERIPHEL_ON) && (result_test != ANY_TEST_RUNNING))
   {
     if (
       result_test == TEST_1_PASS ||
@@ -132,13 +162,14 @@ void write_led_feedback(EVENT_SYSTEM _event, FEEDBACK_TEST result_test)
       result_test == TEST_3_PASS
       )
     {
-      uint8_t i;
-      for (i = 0; i < result_test - 1; i++)
+      /*
+      if(gambi_led>0)
       {
         digitalWrite(LED_RED, LOW);
-        digitalWrite(LED_GRE, HIGH);
-        delay(TIME_FEEDBACK_TEST);
-      }
+        digitalWrite(LED_GRE, timer_neg);
+        timer_neg = !timer_neg;
+        gambi_led--;
+      } */
       digitalWrite(LED_RED, LOW);
       digitalWrite(LED_GRE, HIGH);
     }

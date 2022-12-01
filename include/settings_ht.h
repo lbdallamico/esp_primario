@@ -17,10 +17,10 @@
 typedef enum
 {
     INITIAL = 1,
-    CONTINUIDADE_CABO_1,
-    CONTINUIDADE_CABO_2,
-    CONTINUIDADE_CABO_3,
-    CONTINUIDADE_CABO_4,
+    CONTINUIDADE_CABO_1 = 2,
+    CONTINUIDADE_CABO_2 = 3,
+    CONTINUIDADE_CABO_3 = 4,
+    CONTINUIDADE_CABO_4 = 5,
 } ROUTINE_TEST;
 
 typedef enum 
@@ -34,14 +34,14 @@ typedef enum
 typedef enum
 {
     ANY_TEST_RUNNING = PERIPHEL_ON,
-    TEST_1_PASS,
-    TEST_1_FAIL,
-    TEST_2_PASS,
-    TEST_2_FAIL,
-    TEST_3_PASS,
-    TEST_3_FAIL,
-    TEST_4_PASS,
-    TEST_4_FAIL,
+    TEST_1_PASS = 5,
+    TEST_1_FAIL = 6,
+    TEST_2_PASS = 7,
+    TEST_2_FAIL = 8,
+    TEST_3_PASS = 9,
+    TEST_3_FAIL = 10,
+    TEST_4_PASS = 11,
+    TEST_4_FAIL = 12,
 } FEEDBACK_TEST;
 
 typedef enum 
@@ -65,14 +65,14 @@ typedef enum
 
 // PINOUT LED
 #if defined(CAIXA1)
-    #define LED_RED     13
-    #define LED_GRE     12
-    #define PIN_CABO_1  14
+    #define LED_RED     33
+    #define LED_GRE     13
+    #define PIN_CABO_1  26
     #define PIN_CABO_2  27
-    #define PIN_CABO_3  26
+    #define PIN_CABO_3  25
     #define PIN_CABO_4  32 
-    #define BUTTON_1    25
-    #define BUTTON_2    33
+    #define BUTTON_1    12
+    #define BUTTON_2    14
 #endif
 
 #define TIME_FEEDBACK_TEST  200
