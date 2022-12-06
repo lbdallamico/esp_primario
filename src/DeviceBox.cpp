@@ -5,6 +5,38 @@ struct_msg DeviceBox::_recevid_data;
 UpdateComunication DeviceBox::_is_data_coming;
 uint8_t DeviceBox::_lost_box = 0;
 
+static std::vector<String> name_routine = {
+    "INITIAL",
+    "CONTINUIDADE_CABO_1",
+    "CONTINUIDADE_CABO_2",
+    "CONTINUIDADE_CABO_3",
+    "CONTINUIDADE_CABO_4",
+};
+
+static std::vector<String> name_event = {
+    "STARTING",
+    "ERROR_MODE",
+    "PERIPHEL_OFF",
+    "PERIPHEL_ON",
+};
+
+static std::vector<String> name_feedback = {
+    "ANY_TEST_RUNNING",
+    "TEST_1_PASS",
+    "TEST_1_FAIL",
+    "TEST_2_PASS",
+    "TEST_2_FAIL",
+    "TEST_3_PASS",
+    "TEST_3_FAIL",
+    "TEST_4_PASS",
+    "TEST_4_FAIL",
+};
+
+static std::vector<String> name_box2 = {
+    "DEAD",
+    "ALIVE",
+};
+
 DeviceBox::DeviceBox(void){
     /*
         Construtor apenas para garantir espaço na memoria
@@ -94,7 +126,7 @@ void DeviceBox::Send_Message(void)
                                     (uint8_t *) &_local_data, 
                                     sizeof(_local_data));
     if (result == ESP_OK) {
-        Serial.println("Sent with success");
+        //Serial.println("Sent with success");
     }
     else {
         Serial.println("Error sending the data");
@@ -103,7 +135,6 @@ void DeviceBox::Send_Message(void)
 
 int DeviceBox::Process(void)
 {
-    Serial.println("* Entrou Process *");
     /*
         Semrpre que houver qualquer alteração no sistema
         seja estado ou evento, os dois sistemas precisam
@@ -114,7 +145,6 @@ int DeviceBox::Process(void)
     {
         _local_data._event = ERROR_MODE;
     } */
-    Serial.println("!! - Chegou mensagem");
     if (_recevid_data._box_alive != _local_data._box_alive)
     {
         /*
@@ -135,34 +165,20 @@ int DeviceBox::Process(void)
         _local_data._box_alive = DEAD;
         _local_data._event = PERIPHEL_OFF;
     }
-    Serial.println("* Saiu Process*");
     return 1;
 }
 
 void DeviceBox::Debug_SeeVariables()
 {
     Serial.println("------------------------------");
-    Serial.println("**LOCAL DATA**");
-    Serial.print("{");
-    Serial.print("_event:");
-    Serial.print(_local_data._event);
-    Serial.print(" | _routine:");
-    Serial.print(_local_data._routine);
-    Serial.print(" | _box_alive:");
-    Serial.print(_local_data._box_alive);
-    Serial.println("}");
-    Serial.println("**RECIVED DATA**");
-    Serial.print("{");
-    Serial.print("_event:");
-    Serial.print(_recevid_data._event);
-    Serial.print(" | _routine:");
-    Serial.print(_recevid_data._routine);
-    Serial.print(" | _box_alive:");
-    Serial.print(_recevid_data._box_alive);
-    Serial.print(" | _FEEDBACK:");
-    Serial.print(_recevid_data._feedback_test);
-    Serial.println("}");
-    Serial.println("------------------------------");
+    Serial.print("EVENT   : ");
+    Serial.println(name_event[_local_data._event]);
+    Serial.print("ROUTINE : ");
+    Serial.println(name_routine[_local_data._routine]);
+    Serial.print("BOX 2   : ");
+    Serial.println(name_box2[_local_data._box_alive]);
+    Serial.print("FEEDBACK: ");
+    Serial.println(name_feedback[_local_data._feedback_test]);
 }
 
 void DeviceBox::ResetTest(void)

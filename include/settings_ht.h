@@ -5,6 +5,7 @@
 
 // Global CPP defines
 #include <iostream>
+#include <vector>
 
 // Private includes
 #include <Arduino.h>
@@ -16,16 +17,16 @@
 // Global defines
 typedef enum
 {
-    INITIAL = 1,
-    CONTINUIDADE_CABO_1 = 2,
-    CONTINUIDADE_CABO_2 = 3,
-    CONTINUIDADE_CABO_3 = 4,
-    CONTINUIDADE_CABO_4 = 5,
+    INITIAL = 0,
+    CONTINUIDADE_CABO_1,
+    CONTINUIDADE_CABO_2,
+    CONTINUIDADE_CABO_3,
+    CONTINUIDADE_CABO_4,
 } ROUTINE_TEST;
 
 typedef enum 
 {
-    STARTING = 1,
+    STARTING = 0,
     ERROR_MODE,
     PERIPHEL_OFF,
     PERIPHEL_ON,
@@ -33,15 +34,15 @@ typedef enum
 
 typedef enum
 {
-    ANY_TEST_RUNNING = PERIPHEL_ON,
-    TEST_1_PASS = 5,
-    TEST_1_FAIL = 6,
-    TEST_2_PASS = 7,
-    TEST_2_FAIL = 8,
-    TEST_3_PASS = 9,
-    TEST_3_FAIL = 10,
-    TEST_4_PASS = 11,
-    TEST_4_FAIL = 12,
+    ANY_TEST_RUNNING = 0,
+    TEST_1_PASS,
+    TEST_1_FAIL,
+    TEST_2_PASS,
+    TEST_2_FAIL,
+    TEST_3_PASS,
+    TEST_3_FAIL,
+    TEST_4_PASS,
+    TEST_4_FAIL,
 } FEEDBACK_TEST;
 
 typedef enum 

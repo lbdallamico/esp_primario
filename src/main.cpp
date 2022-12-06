@@ -7,9 +7,7 @@ DeviceBox caixa_1;
 void write_led_feedback(EVENT_SYSTEM _event, FEEDBACK_TEST result_test);
 void write_event_on_pin(ROUTINE_TEST _event);
 
-void feedback_LED_com_test();
 uint8_t gambi_led = 0;
-uint8_t buff_time_led = 0;
 /*
  * Implementação dos testes
  */
