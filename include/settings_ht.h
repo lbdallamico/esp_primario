@@ -71,9 +71,13 @@ typedef enum
     #define PIN_CABO_1  26
     #define PIN_CABO_2  27
     #define PIN_CABO_3  25
-    #define PIN_CABO_4  32 
+    #define PIN_CABO_4  32
     #define BUTTON_1    12
     #define BUTTON_2    14
+    #define LED_TEST_1  15
+    #define LED_TEST_2  2
+    #define LED_TEST_3  18
+    #define LED_TEST_4  22
 #endif
 
 #define TIME_FEEDBACK_TEST  200
